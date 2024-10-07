@@ -84,6 +84,6 @@ jobs:
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \        
-              -e SERVER_SSL_KEY-STORE=/app/keystore/keystore.p12 \  # keystore 경로
+              -e SERVER_SSL_KEY-STORE=${{ secrets.KEYSTORE }} \  # keystore 경로
               -e SERVER_SSL_KEY-STORE-PASSWORD=${{ secrets.KEYSTORE_PWD }} \
               ${{ secrets.DOCKER_USER }}/myapp:latest
