@@ -9,9 +9,6 @@ FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 
-# keystore 파일을 Docker 이미지에 추가
-COPY --from=build /app/keystore/keystore.p12 /app/keystore/keystore.p12
-
 COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java"]
 CMD ["-jar", "app.jar"]
