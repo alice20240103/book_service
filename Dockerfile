@@ -21,3 +21,4 @@ EXPOSE 8080
 
 # ENTRYPOINT 설정: Spring Boot 애플리케이션과 Nginx를 동시에 실행
 CMD ["sh", "-c", "java -jar app.jar & nginx -g 'daemon off;'"]
+
