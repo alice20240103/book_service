@@ -12,6 +12,8 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}   
+      KEYSTORE_PWD: ${{ secrets.KEYSTORE_PWD }}   
 
     steps:
       # 저장소에서 코드 가져오기
@@ -70,4 +72,6 @@ jobs:
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \
+              -e KEYSTORE_BASE64=${{ secrets.KEYSTORE_BASE64 }} \
+              -e KEYSTORE_PWD=${{ secrets.KEYSTORE_PWD }} \
               ${{ secrets.DOCKER_USER }}/myapp:latest
