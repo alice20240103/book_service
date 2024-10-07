@@ -12,7 +12,8 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
-      SERVER_SSL_KEY-STORE: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PWD: ${{ secrets.KEYSTORE_PWD }}
 
     steps:
       # 저장소에서 코드 가져오기
@@ -78,4 +79,5 @@ jobs:
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \        
               -e SERVER_SSL_KEY-STORE=/keystore.p12 \  # 루트 디렉토리 경로
+              -e SERVER_SSL_KEY-STORE-PASSWORD=${{ secrets.KEYSTORE_PWD }} \
               ${{ secrets.DOCKER_USER }}/myapp:latest
