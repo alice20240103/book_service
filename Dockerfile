@@ -12,11 +12,8 @@ WORKDIR /app
 # JAR 파일 복사
 COPY --from=build /app/target/*.jar app.jar
 
-# keystore.p12 파일 생성
-RUN echo "${{ secrets.KEYSTORE }}" | base64 --decode > /app/keystore.p12
+# entrypoint.sh 파일 복사
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# 필요한 경우, 아래와 같이 `USER`를 설정할 수 있음
-# USER ubuntu
-
-ENTRYPOINT ["java"]
-CMD ["-jar", "app.jar"]
+ENTRYPOINT ["/app/entrypoint.sh"]
