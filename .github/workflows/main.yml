@@ -1,0 +1,83 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PWD: ${{ secrets.DB_PWD }}
+      DB_URL: ${{ secrets.DB_URL }}   
+      KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PWD: ${{ secrets.KEYSTORE_PWD }}
+
+    steps:
+      # 저장소에서 코드 가져오기
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Maven을 설치하고 애플리케이션 빌드
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'  # Java 배포판을 지정합니다
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      # Docker Hub로 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # Docker 이미지를 빌드하고 Docker Hub에 푸시
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USER }}/myapp:latest .
+          docker push ${{ secrets.DOCKER_USER }}/myapp:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      # EC2에 SSH로 접속하여 Docker 컨테이너 실행
+      - name: SSH로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            # Docker Hub에 로그인
+            echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+            
+            # keystore.p12 파일을 Docker에 복사
+            # echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /keystore.p12  # 루트 디렉토리에 생성
+            
+            # keystore.p12를 컨테이너가 접근할 수 있는 위치로 이동
+            mv keystore.p12 /path/to/your/keystore/  # 경로를 적절히 설정
+            
+            # Docker 이미지 풀
+            docker pull ${{ secrets.DOCKER_USER }}/myapp:latest
+            
+            # 기존 컨테이너 중지 및 제거
+            docker stop myapp || true
+            docker rm myapp || true
+            
+            # 새로운 컨테이너 실행
+            docker run -d -p 8080:8080 --name myapp --network=mynet \
+              -e DB_URL=${{ secrets.DB_URL }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PWD=${{ secrets.DB_PWD }} \        
+              -e SERVER_SSL_KEY-STORE=${{ secrets.KEYSTORE }} \  # 루트 디렉토리 경로
+              -e SERVER_SSL_KEY-STORE-PASSWORD=${{ secrets.KEYSTORE_PWD }} \
+              ${{ secrets.DOCKER_USER }}/myapp:latest
