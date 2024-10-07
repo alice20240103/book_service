@@ -4,15 +4,20 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-
-# 2단계: 빌드된 JAR파일을 실행할 OPENJDK이미지를 이용하여 Docker이미지 생성
-FROM openjdk:17-jdk
-VOLUME /uploadtest
+# 2단계: Nginx와 Spring Boot를 포함한 최종 이미지 생성
+FROM openjdk:17-jdk AS app
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# 80번 포트를 노출
-EXPOSE 80
+# 3단계: Nginx 설치
+RUN apt-get update && apt-get install -y nginx
 
-# Java 애플리케이션을 80번 포트에서 실행
-ENTRYPOINT ["java", "-jar", "-Dserver.port=80", "app.jar"]
+# Nginx 설정 파일 복사
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# 80번 포트와 8080번 포트 노출
+EXPOSE 80
+EXPOSE 8080
+
+# ENTRYPOINT 설정: Spring Boot 애플리케이션과 Nginx를 동시에 실행
+CMD ["sh", "-c", "java -jar app.jar & nginx -g 'daemon off;'"]
