@@ -10,7 +10,7 @@ VOLUME /uploadtest
 WORKDIR /app
 
 # keystore 디렉토리 생성
-RUN mkdir -p /app/keystore
+#RUN mkdir -p /app/keystore
 
 # JAR 파일 복사
 COPY --from=build /app/target/*.jar app.jar
