@@ -76,6 +76,9 @@ jobs:
               docker rm myapp
             fi
             
+            # Docker run 명령어에 앞서 변수 출력 (디버깅)
+            echo "Running Docker with image: ${{ secrets.DOCKER_USER }}/myapp:latest"
+
             # 새로운 컨테이너 실행
             docker run -d -p 8080:8080 --name myapp --network=mynet \
               -e DB_URL=${{ secrets.DB_URL }} \
