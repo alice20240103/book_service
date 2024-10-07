@@ -71,7 +71,5 @@ jobs:
             docker run -d -p 8080:8080 --name myapp --network=mynet \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PWD=${{ secrets.DB_PWD }} \
-              -e KEYSTORE_BASE64=${{ secrets.KEYSTORE_BASE64 }} \
-              -e KEYSTORE_PWD=${{ secrets.KEYSTORE_PWD }} \
+              -e DB_PWD=${{ secrets.DB_PWD }} \            
               ${{ secrets.DOCKER_USER }}/myapp:latest
