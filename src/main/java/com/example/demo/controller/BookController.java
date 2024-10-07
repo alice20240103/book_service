@@ -21,12 +21,13 @@ public class BookController {
 	@PostMapping("/book/insert")
 	public String insertSumbit(Book book) {		
 		service.save(book);
-		return "redirect:/book/list";
+		return "redirect:/";
 	}
 	
-	@GetMapping("/book/list")
-	public void list(Model model) {
+	@GetMapping("/")
+	public String list(Model model) {
 		model.addAttribute("list", service.findAll());
+		return "/book/list";
 	}
 	
 	
