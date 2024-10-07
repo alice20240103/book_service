@@ -35,10 +35,6 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.p12
-          
       # Docker 이미지를 빌드하고 Docker Hub에 푸시
       - name: Build and push Docker image
         run: |
@@ -61,14 +57,23 @@ jobs:
           script: |
             # Docker Hub에 로그인
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+            
+            # keystore.p12 파일을 Docker에 복사
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /keystore.p12  # 루트 디렉토리에 생성
+            
+            # keystore.p12를 컨테이너가 접근할 수 있는 위치로 이동
+            mv keystore.p12 /path/to/your/keystore/  # 경로를 적절히 설정
+            
             # Docker 이미지 풀
             docker pull ${{ secrets.DOCKER_USER }}/myapp:latest
+            
             # 기존 컨테이너 중지 및 제거
             docker stop myapp || true
             docker rm myapp || true
+            
             # 새로운 컨테이너 실행
             docker run -d -p 8080:8080 --name myapp --network=mynet \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PWD=${{ secrets.DB_PWD }} \
+              -e DB_PWD=${{ secrets.DB_PWD }} \            
               ${{ secrets.DOCKER_USER }}/myapp:latest
