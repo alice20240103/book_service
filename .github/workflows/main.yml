@@ -12,6 +12,7 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
+      SERVER_SSL_KEY-STORE: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
       # 저장소에서 코드 가져오기
@@ -75,5 +76,6 @@ jobs:
             docker run -d -p 8080:8080 --name myapp --network=mynet \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PWD=${{ secrets.DB_PWD }} \            
+              -e DB_PWD=${{ secrets.DB_PWD }} \        
+              -e SERVER_SSL_KEY-STORE=/keystore.p12 \  # 루트 디렉토리 경로
               ${{ secrets.DOCKER_USER }}/myapp:latest
