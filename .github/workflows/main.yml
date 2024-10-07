@@ -61,7 +61,7 @@ jobs:
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
             
             # keystore.p12 파일을 Docker에 복사
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /keystore.p12  # 루트 디렉토리에 생성
+            # echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /keystore.p12  # 루트 디렉토리에 생성
             
             # keystore.p12를 컨테이너가 접근할 수 있는 위치로 이동
             mv keystore.p12 /path/to/your/keystore/  # 경로를 적절히 설정
