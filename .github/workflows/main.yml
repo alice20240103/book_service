@@ -60,8 +60,11 @@ jobs:
             # Docker Hub에 로그인
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
             
+            # keystore 디렉토리 생성 및 권한 설정
+            sudo mkdir -p /app/keystore
+            sudo chown -R $USER:$USER /app/keystore
+
             # keystore.p12 파일 생성
-            mkdir -p /app/keystore
             echo "${{ secrets.KEYSTORE }}" | base64 --decode > /app/keystore/keystore.p12
             
             # Docker 이미지 풀
