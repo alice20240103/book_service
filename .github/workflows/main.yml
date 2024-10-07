@@ -12,7 +12,7 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
-      KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE: /app/keystore/keystore.p12
       KEYSTORE_PWD: ${{ secrets.KEYSTORE_PWD }}
 
     steps:
@@ -60,22 +60,30 @@ jobs:
             # Docker Hub에 로그인
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
             
+            # keystore 디렉토리 생성 및 권한 설정
+            sudo mkdir -p /app/keystore
+            sudo chown -R $USER:$USER /app/keystore
+
             # keystore.p12 파일 생성
-            mkdir -p /app/keystore
             echo "${{ secrets.KEYSTORE }}" | base64 --decode > /app/keystore/keystore.p12
             
             # Docker 이미지 풀
             docker pull ${{ secrets.DOCKER_USER }}/myapp:latest
             
             # 기존 컨테이너 중지 및 제거
-            docker stop myapp || true
-            docker rm myapp || true
+            if [ $(docker ps -q -f name=myapp) ]; then
+              docker stop myapp
+              docker rm myapp
+            fi
             
+            # Docker run 명령어에 앞서 변수 출력 (디버깅)
+            echo "Running Docker with image: ${{ secrets.DOCKER_USER }}/myapp:latest"
+
             # 새로운 컨테이너 실행
             docker run -d -p 8080:8080 --name myapp --network=mynet \
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \        
-              -e SERVER_SSL_KEY-STORE=/app/keystore/keystore.p12 \  # keystore 경로
+              -e SERVER_SSL_KEY-STORE=${{ secrets.KEYSTORE }} \  # keystore 경로
               -e SERVER_SSL_KEY-STORE-PASSWORD=${{ secrets.KEYSTORE_PWD }} \
               ${{ secrets.DOCKER_USER }}/myapp:latest
