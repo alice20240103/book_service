@@ -9,14 +9,14 @@ FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 
-# keystore 디렉토리 생성 및 권한 설정
-RUN mkdir -p /app/keystore && chown -R ubuntu:ubuntu /app/keystore
+# keystore 디렉토리 생성
+RUN mkdir -p /app/keystore
 
 # JAR 파일 복사
 COPY --from=build /app/target/*.jar app.jar
 
-# keystore 파일 복사 (여기서는 빌드 과정에서 keystore를 포함하지 않으므로, EC2에서 처리할 것)
-# COPY --from=build /app/keystore/keystore.p12 /app/keystore/keystore.p12
+# 필요한 경우, 아래와 같이 `USER`를 설정할 수 있음
+# USER ubuntu
 
 ENTRYPOINT ["java"]
 CMD ["-jar", "app.jar"]
