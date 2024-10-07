@@ -27,7 +27,7 @@ public class BookController {
 	@GetMapping("/")
 	public String list(Model model) {
 		model.addAttribute("list", service.findAll());
-		return "/book/list";
+		return "book/list";
 	}
 	
 	
