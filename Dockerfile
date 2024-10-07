@@ -9,11 +9,11 @@ FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 
-# keystore 디렉토리 생성
-#RUN mkdir -p /app/keystore
-
 # JAR 파일 복사
 COPY --from=build /app/target/*.jar app.jar
+
+# keystore.p12 파일 생성
+RUN echo "${{ secrets.KEYSTORE }}" | base64 --decode > /app/keystore.p12
 
 # 필요한 경우, 아래와 같이 `USER`를 설정할 수 있음
 # USER ubuntu
