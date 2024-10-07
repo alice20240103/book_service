@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'  # Java 배포판을 지정합니다
+          distribution: 'temurin'
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
@@ -60,11 +60,9 @@ jobs:
             # Docker Hub에 로그인
             echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
             
-            # keystore.p12 파일을 Docker에 복사
-            # echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /keystore.p12  # 루트 디렉토리에 생성
-            
-            # keystore.p12를 컨테이너가 접근할 수 있는 위치로 이동
-            mv keystore.p12 /path/to/your/keystore/  # 경로를 적절히 설정
+            # keystore.p12 파일 생성
+            mkdir -p /app/keystore
+            echo "${{ secrets.KEYSTORE }}" | base64 --decode > /app/keystore/keystore.p12
             
             # Docker 이미지 풀
             docker pull ${{ secrets.DOCKER_USER }}/myapp:latest
@@ -78,6 +76,6 @@ jobs:
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \        
-              -e SERVER_SSL_KEY-STORE=${{ secrets.KEYSTORE }} \  # 루트 디렉토리 경로
+              -e SERVER_SSL_KEY-STORE=/app/keystore/keystore.p12 \  # keystore 경로
               -e SERVER_SSL_KEY-STORE-PASSWORD=${{ secrets.KEYSTORE_PWD }} \
               ${{ secrets.DOCKER_USER }}/myapp:latest
