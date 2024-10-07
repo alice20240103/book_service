@@ -12,7 +12,7 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
-      KEYSTORE: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE: /app/keystore/keystore.p12
       KEYSTORE_PWD: ${{ secrets.KEYSTORE_PWD }}
 
     steps:
