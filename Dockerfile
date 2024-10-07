@@ -15,3 +15,4 @@ COPY --from=build /app/keystore/keystore.p12 /app/keystore/keystore.p12
 COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java"]
 CMD ["-jar", "app.jar"]
+
