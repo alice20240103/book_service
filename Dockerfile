@@ -8,7 +8,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-COPY /path/to/keystore.p12 /app/keystore.p12  
+COPY --from=build /app/target/*.jar app.jar 
+COPY --from=build /app/keystore.p12 keystore.p12
 ENTRYPOINT ["java"]
 CMD ["-jar", "app.jar", "--server.port=443", "--server.ssl.key-store=classpath:keystore.p12", "--server.ssl.key-store-password=your_password", "--server.ssl.keyStoreType=PKCS12", "--server.ssl.key-alias=your_key_alias"]
