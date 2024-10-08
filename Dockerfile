@@ -9,8 +9,8 @@ FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar 
-COPY --from=build /app/fullchain.pem /app/fullchain.pem
-COPY --from=build /app/privkey.pem /app/privkey.pem
+#COPY --from=build /app/fullchain.pem /app/fullchain.pem
+#COPY --from=build /app/privkey.pem /app/privkey.pem
 
 # ENTRYPOINT 및 CMD 설정
 ENTRYPOINT ["java"]
