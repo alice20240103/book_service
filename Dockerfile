@@ -9,6 +9,7 @@ FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar 
-COPY src/main/resources/keystore.p12 /app/keystore.p12
+
+# ENTRYPOINT 및 CMD 설정
 ENTRYPOINT ["java"]
-CMD ["-jar", "app.jar", "--server.port=443", "--server.ssl.key-store=classpath:keystore.p12", "--server.ssl.key-store-password=your_password", "--server.ssl.keyStoreType=PKCS12", "--server.ssl.key-alias=your_key_alias"]
+CMD ["-jar", "app.jar", "--server.port=443"]
