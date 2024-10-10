@@ -12,7 +12,7 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_URL: ${{ secrets.DB_URL }}   
-
+      
     steps:
       # 저장소에서 코드 가져오기
       - name: Checkout code
@@ -62,10 +62,10 @@ jobs:
             # 기존 컨테이너 중지 및 제거
             docker stop myapp || true
             docker rm myapp || true
+            
             # 새로운 컨테이너 실행
-            docker run -d -p 8080:443 --name myapp --network=mynet \
+              docker run -d -p 8080:443 --name myapp --network=mynet \            
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PWD=${{ secrets.DB_PWD }} \
-              -e KEY_STORE=/etc/letsencrypt/live/www.sist123.store/fullchain.pem \
+              -e DB_PWD=${{ secrets.DB_PWD }} \              
               ${{ secrets.DOCKER_USER }}/myapp:latest
