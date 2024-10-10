@@ -4,11 +4,12 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# 2단계: 빌드된 JAR파일을 실행할 OPENJDK 이미지를 이용하여 Docker 이미지 생성
+# 2단계: 빌드된 JAR 파일을 실행할 OpenJDK 이미지를 이용하여 Docker 이미지 생성
 FROM openjdk:17-jdk
 VOLUME /uploadtest
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar 
-COPY src/main/resources/keystore.p12 /app/keystore.p12
+# SSL 관련 파일 복사 제거
+# COPY src/main/resources/keystore.p12 /app/keystore.p12
 ENTRYPOINT ["java"]
-CMD ["-jar", "app.jar", "--server.port=443", "--server.ssl.key-store=classpath:keystore.p12", "--server.ssl.key-store-password=your_password", "--server.ssl.keyStoreType=PKCS12", "--server.ssl.key-alias=your_key_alias"]
+CMD ["-jar", "app.jar", "--server.port=8080"]  # SSL 제거하고 8080 포트에서 실행
