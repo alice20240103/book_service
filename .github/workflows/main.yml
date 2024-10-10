@@ -67,4 +67,5 @@ jobs:
               -e DB_URL=${{ secrets.DB_URL }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PWD=${{ secrets.DB_PWD }} \
+              -e KEY_STORE=/etc/letsencrypt/live/www.sist123.store/fullchain.pem \
               ${{ secrets.DOCKER_USER }}/myapp:latest
